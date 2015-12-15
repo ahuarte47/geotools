@@ -2,7 +2,7 @@
  *    GeoTools - The Open Source Java GIS Toolkit
  *    http://geotools.org
  * 
- *    (C) 2002-2008, Open Source Geospatial Foundation (OSGeo)
+ *    (C) 2002-2015, Open Source Geospatial Foundation (OSGeo)
  *
  *    This library is free software; you can redistribute it and/or
  *    modify it under the terms of the GNU Lesser General Public
@@ -44,7 +44,8 @@ public class PropertyAccessors {
         // reasons         
         cache.add( new NullPropertyAccessorFactory()); //NC - added       
         cache.add( new SimpleFeaturePropertyAccessorFactory());
-        cache.add( new DirectPropertyAccessorFactory());       
+        cache.add( new DirectPropertyAccessorFactory());
+        cache.add( new ComplexPropertyAccessorFactory());
         Iterator factories = FactoryRegistry
                  .lookupProviders(PropertyAccessorFactory.class);
          while (factories.hasNext()) {
