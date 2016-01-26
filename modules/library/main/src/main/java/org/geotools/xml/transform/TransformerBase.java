@@ -426,6 +426,52 @@ public abstract class TransformerBase {
             }
         }
     }
+    
+    /**
+     * Nested support for writing Translators.
+     */
+    protected  abstract static class NestedTranslatorSupport extends TranslatorSupport {
+        
+        private List<Integer> markList = new ArrayList<Integer>();
+        
+        public NestedTranslatorSupport(ContentHandler contentHandler, String prefix, String nsURI) {
+            super(contentHandler, prefix, nsURI);
+        }
+        public NestedTranslatorSupport(ContentHandler contentHandler, String prefix, String nsURI, SchemaLocationSupport schemaLocation) {
+            super(contentHandler, prefix, nsURI, schemaLocation);
+        }
+        
+        @Override
+        protected void mark() {
+            if (markList.size() == 0) {
+                super.mark();
+            }
+            markList.add(pending.size());
+        }
+        @Override
+        protected void commit() {
+            if (markList.size() > 1) {
+                int lastIndex = markList.size()-1;
+                markList.set(lastIndex-1, markList.get(lastIndex-1) + markList.get(lastIndex));
+            }
+            else {
+                super.commit();
+            }
+            markList.remove(markList.size()-1);
+        }
+        @Override
+        protected void reset() {
+            if (markList.size() > 1) {
+                for (int i = 0, j = pending.size()-1, icount = pending.size()-markList.get(markList.size()-1); i < icount; i++,j--) {
+                    pending.remove(j);
+                }
+            }
+            else {
+                super.reset();
+            }
+            markList.remove(markList.size()-1);
+        }
+    }
 
     /**
      * Support for writing Translators.
@@ -442,7 +488,7 @@ public abstract class TransformerBase {
          * The queue of write operations pending for this translator.
          * This should be empty if no mark is set.
          */
-        private List<Action> pending = new ArrayList<Action>();
+        protected List<Action> pending = new ArrayList<Action>();
 
         /**
          * An Action records a call to one of the SAX-event-generating methods
