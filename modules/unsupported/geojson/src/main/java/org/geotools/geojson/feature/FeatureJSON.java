@@ -26,7 +26,9 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -641,7 +643,7 @@ public class FeatureJSON {
                     string(ad.getLocalName(), sb).append(":")
                     .append(gjson.toString((Geometry) value));
                 } else {
-                    entry(ad.getLocalName(), value, sb);
+                    entryComplexValue(ad.getLocalName(), value, sb);
                 }
                 sb.append(",");
             }
@@ -656,6 +658,39 @@ public class FeatureJSON {
             
             sb.append("}");
             return sb.toString();
+        }
+        
+        /**
+         * Writes a key-value pair entry as GeoJSON.
+         */
+        public StringBuilder entryComplexValue(String key, Object value, StringBuilder sb) {
+            Class<?> clazz = null;
+            
+            if (value == null || value instanceof Number || value instanceof Boolean || value instanceof Date || value instanceof String || value instanceof Geometry)
+                return GeoJSONUtil.entry(key, value, sb);
+            
+            clazz = value.getClass();
+            
+            // We write the class-type attribute values as a normal JSON object.
+            if (!clazz.isPrimitive()) {
+                GeoJSONUtil.string(key, sb).append(":{");
+                
+                for (Field f : clazz.getDeclaredFields()) {
+                    try {
+                        entry(f.getName(), f.get(value), sb);
+                        sb.append(",");
+                    }
+                    catch (Exception e) {
+                    }
+                }
+                if (sb.length() > 1) {
+                    sb.setLength(sb.length() - 1);
+                }
+                sb.append("}");
+                
+                return sb;
+            }
+            return GeoJSONUtil.entry(key, value, sb);
         }
         
         public String toJSONString() {
