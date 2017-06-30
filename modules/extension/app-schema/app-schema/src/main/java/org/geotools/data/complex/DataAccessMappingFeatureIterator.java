@@ -908,7 +908,21 @@ public class DataAccessMappingFeatureIterator extends AbstractMappingFeatureIter
         // END OF HACK
 
         query.setFilter(fidFilter);
-        matchingFeatures = this.mappedSource.getFeatures(query);
+
+        // Does current feature match the filter to apply?
+        matchingFeatures = null;
+        if (curSrcFeature != null && curSrcFeature instanceof org.opengis.feature.simple.SimpleFeature) {
+            Filter filter = query.getFilter();
+            
+            if (filter.evaluate(curSrcFeature)) {
+                org.geotools.feature.DefaultFeatureCollection featureCollection = new org.geotools.feature.DefaultFeatureCollection();
+                featureCollection.add((org.opengis.feature.simple.SimpleFeature)curSrcFeature);
+                matchingFeatures = featureCollection;
+            }
+        }
+        if (matchingFeatures == null) {
+            matchingFeatures = this.mappedSource.getFeatures(query);
+        }
 
         List<Feature> features = new ArrayList<Feature>();
         try (FeatureIterator<? extends Feature> iterator = matchingFeatures.features()) {

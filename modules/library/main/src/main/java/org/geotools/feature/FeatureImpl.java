@@ -122,6 +122,11 @@ public class FeatureImpl extends ComplexAttributeImpl implements Feature {
 								 defaultGeometry = (GeometryAttribute)property;	 
 								 break;
 							 }
+							 // For complex features the type can be other than GeometryAttribute default definition.
+							 if (property.getValue() instanceof com.vividsolutions.jts.geom.Geometry) {
+                                 defaultGeometry = (GeometryAttribute)property;
+                                 break;
+							 }
 						 }
 					 }
 				 }
