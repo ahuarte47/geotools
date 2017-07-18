@@ -183,6 +183,19 @@ public class LabelCacheImpl implements LabelCache {
         this.labelRenderingMode = mode;
     }
 
+    /**
+     * Sets whether we draw text using {@link Graphics2D#drawGlyphVector(GlyphVector, float, float)}
+     * or {@link Graphics2D#drawString(GlyphVector, float, float)} instead
+     * when the label rendering mode is STRING.
+     */
+    public void setGlyphRenderingMode(boolean glyphRenderingMode) {
+        this.glyphRenderingMode = glyphRenderingMode;
+    }
+    public boolean getGlyphRenderingMode() {
+        return glyphRenderingMode;
+    }
+    protected boolean glyphRenderingMode = true;
+
     public void stop() {
         stop = true;
         activeLayers.clear();
@@ -461,7 +474,7 @@ public class LabelCacheImpl implements LabelCache {
         } else {
             items = getActiveLabels();
         }
-        LabelPainter painter = new LabelPainter(graphics, labelRenderingMode);
+        LabelPainter painter = new LabelPainter(graphics, labelRenderingMode, glyphRenderingMode);
         for (LabelCacheItem labelItem : items) {
             if (stop)
                 return;

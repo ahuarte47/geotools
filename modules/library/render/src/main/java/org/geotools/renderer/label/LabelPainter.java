@@ -116,6 +116,27 @@ public class LabelPainter {
     }
 
     /**
+     * Builds a new painter, 
+     * specifing whether draw text {@link Graphics2D#drawGlyphVector(GlyphVector, float, float)}
+     * or {@link Graphics2D#drawString(GlyphVector, float, float)} instead
+     * when the label rendering mode is STRING.
+     * 
+     * @param graphics
+     * @param outlineRenderingEnabled
+     * @param glyphRenderingMode
+     */
+    public LabelPainter(Graphics2D graphics, LabelRenderingMode labelRenderingMode, boolean glyphRenderingMode) {
+        this(graphics, labelRenderingMode);
+        this.glyphRenderingMode = glyphRenderingMode;
+    }
+    /**
+     * Whether we draw text using {@link Graphics2D#drawGlyphVector(GlyphVector, float, float)}
+     * or {@link Graphics2D#drawString(GlyphVector, float, float)} instead
+     * when the label rendering mode is STRING.
+     */
+    boolean glyphRenderingMode = true;
+
+    /**
      * Sets the current label. The label will be laid out according to the label
      * item settings (curved lines, auto wrapping, curved line usage) and the
      * painter will be ready to draw it.
@@ -503,7 +524,13 @@ public class LabelPainter {
         // draw the under line
         drawStraightLabelUnderlineIfNeeded(outline, metrics, false);
         if(labelRenderingMode == LabelRenderingMode.STRING) {
-            graphics.drawGlyphVector(gv, 0, 0);
+            if (glyphRenderingMode) {
+                graphics.drawGlyphVector(gv, 0, 0);
+            }
+            else {
+                graphics.setFont(gv.getFont());
+                graphics.drawString(component.getText(), 0, 0);
+            }
         } else if(labelRenderingMode == LabelRenderingMode.OUTLINE) {
             graphics.fill(outline);
         } else {

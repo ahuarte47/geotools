@@ -797,6 +797,11 @@ public class StreamingRenderer implements GTRenderer {
                 labelCache.start();
                 if(labelCache instanceof LabelCacheImpl) {
                     ((LabelCacheImpl) labelCache).setLabelRenderingMode(LabelRenderingMode.valueOf(getTextRenderingMethod()));
+                    
+                    if (rendererHints != null) {
+                        Object result = rendererHints.get("textAsShapes");
+                        if (result != null) ((LabelCacheImpl)labelCache).setGlyphRenderingMode(((Boolean)result).booleanValue());
+                    }
                 }
                 
                 for (Layer layer : currentMapContent.layers()) {
