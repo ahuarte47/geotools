@@ -217,18 +217,17 @@ class CdxNode implements Node {
     }
     
     /**
-     * Returns a list containing all of the child Nodes of this object (Null when it hasn't children).
+     * Returns a list containing all of the LEAF child Nodes of this object.
      * @throws IOException
      */
-    @Override
-    public Node[] getChildren(NodeVisitorArgs visitorArgs) throws IOException {
+    protected CdxNode[] getLeafChildren(NodeVisitorArgs visitorArgs) throws IOException {
         
         readHeader();
         
         // It is not a no-empty 'Leaf' Node.
         if (numberOfKeys>0 && (nodeAttributes&INDEX_OPTIONS_LEAF_NODE)!=INDEX_OPTIONS_LEAF_NODE) {
             
-            Node[] nodeArray = new Node[numberOfKeys];
+            CdxNode[] nodeArray = new CdxNode[numberOfKeys];
             
             SeekableByteChannel file = dbaseIndex.getChannel();
             file.seek(filePos + 12);
@@ -250,7 +249,22 @@ class CdxNode implements Node {
                 
                 nodeArray[i] = new CdxNode(dbaseIndex, npage, childKey);
             }
-            return prepareVirtualPoolWithRecords(nodeArray, visitorArgs);
+            return nodeArray;
+        }
+        return new CdxNode[0];
+    }    
+    /**
+     * Returns a list containing all of the child Nodes of this object (Null when it hasn't children).
+     * @throws IOException
+     */
+    @Override
+    public Node[] getChildren(NodeVisitorArgs visitorArgs) throws IOException {
+        
+        readHeader();
+        
+        // It is not a no-empty 'Leaf' Node.
+        if (numberOfKeys>0 && (nodeAttributes&INDEX_OPTIONS_LEAF_NODE)!=INDEX_OPTIONS_LEAF_NODE) {
+            return prepareVirtualPoolWithRecords(this.getLeafChildren(visitorArgs), visitorArgs);
         }
         else
         if (numberOfKeys>0 && records==null) {

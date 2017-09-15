@@ -58,6 +58,18 @@ class CdxRootNode extends CdxNode {
         SeekableByteChannel file = dbaseIndex.getChannel();
         readHeader();
         
+        if (numberOfKeys>0 && (nodeAttributes&INDEX_OPTIONS_LEAF_NODE)!=INDEX_OPTIONS_LEAF_NODE) { //-> It is not a no-empty 'Leaf' Node.
+            CdxNode[] childNodes = getLeafChildren(null);
+            
+            for (CdxNode childNode : childNodes) {
+                CdxRootNode rtnode = new CdxRootNode(dbaseIndex, "", childNode.filePos, childNode.key);
+                
+                for (CdxRootNode childrtNode : rtnode.getRootChildren(header, INDEX_OPTIONS_COMPACT_INDEX_HEADER)) {
+                    rootList.add(childrtNode);
+                }
+            }
+            return rootList.toArray(new CdxRootNode[0]);
+        }
         if ((indexOptions&INDEX_OPTIONS_COMPACT_INDEX_HEADER)==INDEX_OPTIONS_COMPACT_INDEX_HEADER) {
             
             file.seek(filePos + 14);
