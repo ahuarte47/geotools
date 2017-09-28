@@ -237,6 +237,15 @@ public class CommonsConverterFactory implements ConverterFactory {
             }
             catch( Exception ignore){
             }
+            for (String formatPattern : new String[]{ "yyyy-MM-dd HH:mm:ss", "yyyy-MM-ddTHH:mm:ss", "yyyy-MM-dd" }) {
+                try {
+                    SimpleDateFormat format3 = new SimpleDateFormat(formatPattern);
+                    Date parsed = format3.parse(string);
+                    return target.cast(parsed);
+                }
+                catch( Exception ignore){
+                }
+            }
             return null;
         }
     }
