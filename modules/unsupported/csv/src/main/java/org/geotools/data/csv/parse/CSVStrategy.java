@@ -108,6 +108,12 @@ public abstract class CSVStrategy {
     protected static Map<String, Class<?>> findMostSpecificTypesFromData(CsvReader csvReader,
             String[] headers) throws IOException {
         Map<String, Class<?>> result = new HashMap<String, Class<?>>();
+        
+        List<java.time.format.DateTimeFormatter> formatterList = new java.util.ArrayList<java.time.format.DateTimeFormatter>();
+        formatterList.add(java.time.format.DateTimeFormatter.ISO_DATE_TIME);
+        formatterList.add(java.time.format.DateTimeFormatter.ISO_DATE);
+        int featureCount = 0;
+        
         // start off assuming Integers for everything
         for (String header : headers) {
             result.put(header, Integer.class);
@@ -123,6 +129,29 @@ public abstract class CSVStrategy {
             for (String value : values) {
                 String header = headers[i];
                 Class<?> type = result.get(header);
+                
+                // Parse Boolean and Date/Time attribute types too.
+                if (value == null || value.length() == 0) {
+                    i++;
+                    continue;
+                }
+                if (type == Boolean.class && (!value.equalsIgnoreCase("true") && !value.equalsIgnoreCase("false"))) {
+                    type = String.class;
+                }
+                if (type == Integer.class) {
+                    if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) type = Boolean.class;
+                }
+                if (type == Integer.class || type == java.util.Date.class) {
+                    for (int j = 0, jcount = formatterList.size(); j < jcount; j++) {
+                        try {
+                            formatterList.get(j).parse(value.replace(' ', 'T'));
+                            type = java.util.Date.class;
+                            break;
+                        } catch (Exception ex) {
+                        }
+                    }
+                }
+                
                 // For each value in the row, ensure we can still parse it as the 
                 // defined type for this column; if not, make it more general
                 if (type == Integer.class) {
@@ -146,6 +175,10 @@ public abstract class CSVStrategy {
                 result.put(header, type);
                 i++;
             }
+            
+            // Skip to parse very-big CSV files.
+            if (featureCount>=100) break;
+            featureCount++;
         }
         return result;
     }

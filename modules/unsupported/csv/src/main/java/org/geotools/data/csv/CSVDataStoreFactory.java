@@ -157,6 +157,25 @@ public class CSVDataStoreFactory implements FileDataStoreFactorySpi {
         CSVFileState csvFileState = new CSVFileState(file, namespace);
         Object strategyParam = STRATEGYP.lookUp(params);
         CSVStrategy csvStrategy = null;
+        
+        // Lookup geometry fields better.
+        if (strategyParam == null || params == null || params.size() == 0) {
+            org.geotools.feature.simple.SimpleFeatureTypeBuilder builder = CSVStrategy.createBuilder(csvFileState);
+            
+            if (builder != null) {
+                org.opengis.feature.type.AttributeDescriptor lonDescr = builder.get("longitude");
+                org.opengis.feature.type.AttributeDescriptor latDescr = builder.get("latitude");
+                if (lonDescr == null || latDescr == null) {
+                    lonDescr = builder.get("lon");
+                    latDescr = builder.get("lat");
+                }
+                if (lonDescr != null && lonDescr.getType().getBinding().isAssignableFrom(Double.class) &&
+                    latDescr != null && latDescr.getType().getBinding().isAssignableFrom(Double.class)) {
+                    strategyParam = "guess";
+                }
+            }
+        }
+        
         if (strategyParam != null) {
             String strategyString = strategyParam.toString();
             if (strategyString.equalsIgnoreCase("guess")) {
