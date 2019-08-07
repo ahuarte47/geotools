@@ -429,7 +429,7 @@ public class Query {
      * @see #retrieveAllProperties()
      */
     public List<PropertyName> getProperties() {
-        if (properties == ALL_PROPERTIES) {
+        if (properties == ALL_PROPERTIES || (properties != null && properties.size() == 0)) {
             return ALL_PROPERTIES;
         }
         return Collections.<PropertyName>unmodifiableList(properties) ;

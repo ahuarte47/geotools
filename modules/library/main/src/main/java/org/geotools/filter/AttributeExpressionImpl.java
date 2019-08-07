@@ -234,7 +234,7 @@ public class AttributeExpressionImpl extends DefaultExpression implements Proper
         }
 
         // When the value is an Attribute reference, use its value. 
-        if (value.get() != null && value.get() instanceof org.opengis.feature.Attribute) {
+        if (value.get() != null && target != null && value.get() instanceof org.opengis.feature.Attribute) {
             return Converters.convert(((org.opengis.feature.Attribute)value.get()).getValue(), target);
         }
         

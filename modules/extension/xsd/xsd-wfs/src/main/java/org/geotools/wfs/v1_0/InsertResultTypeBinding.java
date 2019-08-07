@@ -34,7 +34,7 @@ import org.geotools.xml.impl.ElementImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
+//import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 
 
 /**

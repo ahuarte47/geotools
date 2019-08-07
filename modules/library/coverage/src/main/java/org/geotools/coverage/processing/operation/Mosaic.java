@@ -20,7 +20,7 @@ import it.geosolutions.jaiext.JAIExt;
 import it.geosolutions.jaiext.range.NoDataContainer;
 import it.geosolutions.jaiext.range.Range;
 import it.geosolutions.jaiext.range.RangeFactory;
-import sun.font.CreatedFontTracker;
+//import sun.font.CreatedFontTracker;
 
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
