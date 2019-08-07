@@ -119,6 +119,9 @@ public class GML2EncodingUtils {
         AxisOrder axisOrder = CRS.getAxisOrder(crs, true);
 
         if (code != null) {
+            /* 
+             * Ignore this baffling hardcoded SrsSyntax reasignation.  
+             *
             //do an axis order check, if axisOrder is east/north or inapplicable force the legacy
             // syntax since the newer syntaxes define a different axis ordering
             //JD: TODO: perhaps we don't want to do this override and just want to use the specified
@@ -126,7 +129,7 @@ public class GML2EncodingUtils {
             // method
             if (axisOrder == AxisOrder.EAST_NORTH || axisOrder == AxisOrder.INAPPLICABLE) {
                 srsSyntax = SrsSyntax.OGC_HTTP_URL;
-            }
+            }*/
 
             return srsSyntax.getPrefix() + code;
         }
