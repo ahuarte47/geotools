@@ -255,7 +255,7 @@ public class ComplexFilterSplitter extends PostPreProcessFilterSplittingVisitor 
     public Object visit(PropertyName expression, Object notUsed) {
         
         // replace the artificial DEFAULT_GEOMETRY property with the actual one
-        if (DEFAULT_GEOMETRY_LOCAL_NAME.equals(expression.getPropertyName())) {
+        if (mappings.representsGeometryXPath(expression.getPropertyName(), DEFAULT_GEOMETRY_LOCAL_NAME)) {
             String defGeomPath = mappings.getDefaultGeometryXPath();
             FilterFactory2 ff = new FilterFactoryImplNamespaceAware(mappings.getNamespaces());
             expression = ff.property(defGeomPath);

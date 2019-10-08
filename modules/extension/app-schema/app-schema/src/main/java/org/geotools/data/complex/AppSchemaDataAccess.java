@@ -528,7 +528,7 @@ public class AppSchemaDataAccess implements DataAccess<FeatureType, Feature> {
                 if (!addThis) {
                     for (PropertyName requestedProperty : requestedProperties) {
                         // replace the artificial DEFAULT_GEOMETRY property with the actual one
-                        if (DEFAULT_GEOMETRY_LOCAL_NAME.equals(requestedProperty.getPropertyName())) {
+                        if (mapping.representsGeometryXPath(requestedProperty.getPropertyName(), DEFAULT_GEOMETRY_LOCAL_NAME)) {
                             String defGeomPath = mapping.getDefaultGeometryXPath();
                             requestedProperty = filterFac.property(defGeomPath,
                                     mapping.getNamespaces());

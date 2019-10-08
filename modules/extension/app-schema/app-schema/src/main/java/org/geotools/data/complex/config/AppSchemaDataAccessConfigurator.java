@@ -368,6 +368,11 @@ public class AppSchemaDataAccessConfigurator {
 
             String defGeomNamespace = type.getName().getNamespaceURI();
             String defGeomLocalName = ComplexFeatureConstants.DEFAULT_GEOMETRY_LOCAL_NAME;
+            if (defGeomLocalName == null || defGeomLocalName.isEmpty()) {
+                defGeomLocalName = defaultGeomXPath != null && !defaultGeomXPath.isEmpty() ? defaultGeomXPath : geom.getLocalName();
+                int prefixIdx = defGeomLocalName.indexOf(':');
+                if (prefixIdx != -1) defGeomLocalName = defGeomLocalName.substring(prefixIdx + 1);
+            }
             GeometryDescriptor defGeom = ftf.createGeometryDescriptor(geom.getType(),
                     new NameImpl(defGeomNamespace, defGeomLocalName), geom.getMinOccurs(),
                     geom.getMaxOccurs(), geom.isNillable(), geom.getDefaultValue());

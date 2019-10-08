@@ -128,7 +128,7 @@ public class AppSchemaFeatureFactoryImpl extends ValidatingFeatureFactoryImpl {
     @Override
     @SuppressWarnings("unchecked")
     public Feature createFeature(Collection value, AttributeDescriptor descriptor, String id) {
-        return new FeatureImpl(buildCollectionIfNull(value), descriptor, buildSafeFeatureId(id));
+        return new AppSchemaFeatureImpl(buildCollectionIfNull(value), descriptor, buildSafeFeatureId(id));
     }
 
     /**
@@ -140,7 +140,7 @@ public class AppSchemaFeatureFactoryImpl extends ValidatingFeatureFactoryImpl {
     @Override
     @SuppressWarnings("unchecked")
     public Feature createFeature(Collection value, FeatureType type, String id) {
-        return new FeatureImpl(buildCollectionIfNull(value), type, buildSafeFeatureId(id));
+        return new AppSchemaFeatureImpl(buildCollectionIfNull(value), type, buildSafeFeatureId(id));
     }
 
     /**
@@ -186,4 +186,28 @@ public class AppSchemaFeatureFactoryImpl extends ValidatingFeatureFactoryImpl {
         }
     }
 
+    /**
+     * Specific AppSchema FeatureImpl to improve some methods working with the 'defaultGeometry' attribute.
+     */
+    class AppSchemaFeatureImpl extends FeatureImpl {
+        public AppSchemaFeatureImpl(Collection<Property> properties, AttributeDescriptor desc, FeatureId id) {
+            super(properties, desc, id);
+        }
+        public AppSchemaFeatureImpl(Collection<Property> properties, FeatureType type, FeatureId id) {
+            super(properties, type, id);
+        }
+        @Override
+        public void setDefaultGeometryProperty(GeometryAttribute defaultGeometry) {
+            this.defaultGeometry = defaultGeometry;
+        }
+        @Override
+        public org.opengis.geometry.BoundingBox getBounds() {
+            org.opengis.geometry.BoundingBox bbox = super.getBounds();
+            
+            if (this.defaultGeometry != null && (bbox == null || bbox.isEmpty())) {
+                bbox = this.defaultGeometry.getBounds();
+            }
+            return bbox;
+        }
+    }
 }

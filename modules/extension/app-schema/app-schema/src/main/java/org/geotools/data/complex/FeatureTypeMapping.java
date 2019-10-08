@@ -432,4 +432,37 @@ public class FeatureTypeMapping {
     public void setSource(FeatureSource<? extends FeatureType, ? extends Feature> source) {
         this.source = source;
     }
+
+    /**
+     * Returns whether the specified property represents the XPath expression identifying the default geometry property.
+     */
+    public static boolean representsGeometryXPath(FeatureTypeMapping mappings, String propertyName, String defaultGeometryXPath) {
+        if (propertyName != null) {
+            if (defaultGeometryXPath == null)
+                defaultGeometryXPath = org.geotools.data.complex.ComplexFeatureConstants.DEFAULT_GEOMETRY_LOCAL_NAME;
+            
+            if (propertyName.equals(defaultGeometryXPath))
+                return true;
+            
+            if (mappings.defaultGeometryXPath != null && !mappings.defaultGeometryXPath.isEmpty()) {
+                String geometryXPath = mappings.defaultGeometryXPath;
+                
+                if (propertyName.equals(geometryXPath)) 
+                    return true;
+                
+                int prefixIdx =  geometryXPath.indexOf(":");
+                if (prefixIdx != -1) geometryXPath = geometryXPath.substring(prefixIdx + 1);
+                
+                if (propertyName.equals(geometryXPath)) 
+                    return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * Returns whether the specified property represents the XPath expression identifying the default geometry property.
+     */
+    public boolean representsGeometryXPath(String propertyName, String defaultGeometryXPath) {
+        return FeatureTypeMapping.representsGeometryXPath(this, propertyName, defaultGeometryXPath);
+    }
 }

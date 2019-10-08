@@ -678,6 +678,10 @@ public class DataAccessMappingFeatureIterator extends AbstractMappingFeatureIter
         if (instance != null && attMapping.encodeIfEmpty()) {
             instance.getDescriptor().getUserData().put("encodeIfEmpty", attMapping.encodeIfEmpty());
         }
+        if (instance != null && target instanceof Feature && instance instanceof org.opengis.feature.GeometryAttribute) {
+            Feature feature = (Feature)target;
+            feature.setDefaultGeometryProperty((org.opengis.feature.GeometryAttribute)instance);
+        }
         return instance;
     }
 

@@ -817,7 +817,7 @@ public class UnmappingFilterVisitor implements org.opengis.filter.FilterVisitor,
         
         String targetXPath = expr.getPropertyName();
         // replace the artificial DEFAULT_GEOMETRY property with the actual one
-        if (DEFAULT_GEOMETRY_LOCAL_NAME.equals(targetXPath)) {
+        if (mappings.representsGeometryXPath(targetXPath, DEFAULT_GEOMETRY_LOCAL_NAME)) {
             targetXPath = mappings.getDefaultGeometryXPath();
         }
         

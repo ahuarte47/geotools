@@ -284,7 +284,7 @@ public abstract class AbstractMappingFeatureIterator implements IMappingFeatureI
 
                 for (PropertyName requestedProperty : propertyNames) {
                     // replace the artificial DEFAULT_GEOMETRY property with the actual one
-                    if (DEFAULT_GEOMETRY_LOCAL_NAME.equals(requestedProperty.getPropertyName())) {
+                    if (mapping.representsGeometryXPath(requestedProperty.getPropertyName(), DEFAULT_GEOMETRY_LOCAL_NAME)) {
                         String defGeomPath = mapping.getDefaultGeometryXPath();
                         requestedProperty = namespaceAwareFilterFactory.property(defGeomPath);
                     }
