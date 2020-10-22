@@ -1319,7 +1319,7 @@ public class StreamingRenderer implements GTRenderer {
         CoordinateReferenceSystem crs = null;
         //NC - property (namespace) support
         for (PropertyName name : attNames) {
-            Object att = name.evaluate(schema);
+            Object att = evaluateAttributeForSchema(name, schema);
 
             if(att instanceof GeometryDescriptor) {
                 GeometryDescriptor gd = (GeometryDescriptor) att;
@@ -1671,7 +1671,7 @@ public class StreamingRenderer implements GTRenderer {
         for (int j = 0; j < length; j++) {
             //NC - support nested attributes -> use evaluation for getting descriptor
             //result is not necessary a descriptor, is Name in case of @attribute
-            attType =  attributes.get(j).evaluate(schema);
+            attType =  evaluateAttributeForSchema(attributes.get(j), schema);
 
             // the attribute type might be missing because of rendering transformations, skip it
             if (attType == null) {
@@ -2093,6 +2093,25 @@ public class StreamingRenderer implements GTRenderer {
     }
     
     /**
+     * Evaluate the specified Attribute and Schema to fetch related Descriptor.
+     */
+    private static Object evaluateAttributeForSchema(PropertyName attribute, FeatureType schema) {
+        //
+        // Early evaluation using the Geometry Descriptor.
+        //
+        GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
+        
+        if (geometryDescriptor != null) {
+            String localName = geometryDescriptor.getLocalName();
+            
+            if (attribute.getPropertyName().equals(localName)) {
+                return geometryDescriptor;
+            }
+        }
+        return attribute.evaluate(schema);
+    }
+    
+    /**
      * Checks the attributes in the query (which we got from the SLD) match the 
      * schema, throws an {@link IllegalFilterException} otherwise
      * @param schema
@@ -2104,7 +2123,7 @@ public class StreamingRenderer implements GTRenderer {
         }
         
         for (PropertyName attribute : query.getProperties()) {
-            if(attribute.evaluate(schema) == null) {
+            if(evaluateAttributeForSchema(attribute, schema) == null) {
                 if (schema instanceof SimpleFeatureType) {
                     List<Name> allNames = new ArrayList<Name>();
                     for (PropertyDescriptor pd : schema.getDescriptors()) {
@@ -2740,7 +2759,7 @@ public class StreamingRenderer implements GTRenderer {
             StyleAttributeExtractor attExtractor = new StyleAttributeExtractor();
             geometry.accept(attExtractor, null);
             for (PropertyName name : attExtractor.getAttributes()) {
-                if (name.evaluate(schema) instanceof GeometryDescriptor) {
+                if (evaluateAttributeForSchema(name, schema) instanceof GeometryDescriptor) {
                     return getAttributeCRS(name, schema);
                 }
             }
@@ -2761,7 +2780,7 @@ public class StreamingRenderer implements GTRenderer {
             GeometryDescriptor geom = schema.getGeometryDescriptor();
             return geom.getType().getCoordinateReferenceSystem();
         } else {
-            GeometryDescriptor geom = (GeometryDescriptor) geomName.evaluate(schema);
+            GeometryDescriptor geom = (GeometryDescriptor) evaluateAttributeForSchema(geomName, schema);
             return geom.getType().getCoordinateReferenceSystem();
         }
     }
