@@ -70,6 +70,9 @@ public class PreventLocalEntityResolver implements EntityResolver2, Serializable
         if (systemId != null && systemId.matches("(?i)(jar:file|http|vfs)[^?#;]*\\.xsd")) {
             return null;
         }
+        if (systemId != null && systemId.matches("(?i)(file|http|vfs)[^?#;]*\\.xsd")) {
+            return null;
+        }
         
         // do not allow external entities
         throw new SAXException(ERROR_MESSAGE_BASE + systemId);
